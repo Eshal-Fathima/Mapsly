@@ -22,14 +22,12 @@ import WorkflowDiagram from "./WorkflowDiagram";
 
 /** Get plain text content from a message (handles both v5 string content and v6 parts) */
 function getMessageText(message: { content?: string; parts?: Array<{ type: string; text?: string }> }): string {
-  // v6 parts-based format
   if (message.parts && Array.isArray(message.parts)) {
     return message.parts
       .filter((p) => p.type === "text")
       .map((p) => p.text ?? "")
       .join("");
   }
-  // Fallback to content string
   if (typeof message.content === "string") {
     return message.content;
   }
@@ -111,9 +109,8 @@ export default function ChatInterface() {
       {/* CHAT PANEL                                                        */}
       {/* ================================================================= */}
       <div
-        className={`flex flex-col ${
-          latestWorkflow ? "lg:w-1/2" : "w-full max-w-3xl mx-auto"
-        } transition-all duration-500`}
+        className={`flex flex-col ${latestWorkflow ? "lg:w-1/2" : "w-full max-w-3xl mx-auto"
+          } transition-all duration-500`}
       >
         {/* Messages area */}
         <div className="flex-1 overflow-y-auto space-y-4 pr-2 pb-4 scrollbar-thin">
@@ -145,6 +142,7 @@ export default function ChatInterface() {
                   "A music recommendation engine",
                 ].map((suggestion) => (
                   <button
+                    suppressHydrationWarning
                     key={suggestion}
                     onClick={() => setInput(suggestion)}
                     className="text-xs px-3 py-2 rounded-xl bg-white/5 text-gray-300 border border-white/10 
@@ -173,17 +171,15 @@ export default function ChatInterface() {
             return (
               <div
                 key={message.id}
-                className={`flex gap-3 animate-slide-up ${
-                  isAssistant ? "" : "flex-row-reverse"
-                }`}
+                className={`flex gap-3 animate-slide-up ${isAssistant ? "" : "flex-row-reverse"
+                  }`}
               >
                 {/* Avatar */}
                 <div
-                  className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${
-                    isAssistant
+                  className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${isAssistant
                       ? "bg-gradient-to-br from-violet-500 to-indigo-600 shadow-md shadow-violet-500/20"
                       : "bg-gradient-to-br from-emerald-500 to-teal-600 shadow-md shadow-emerald-500/20"
-                  }`}
+                    }`}
                 >
                   {isAssistant ? (
                     <Bot className="w-4 h-4 text-white" />
@@ -194,11 +190,10 @@ export default function ChatInterface() {
 
                 {/* Message bubble */}
                 <div
-                  className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
-                    isAssistant
+                  className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${isAssistant
                       ? "bg-white/[0.06] text-gray-200 border border-white/[0.08]"
                       : "bg-gradient-to-r from-violet-600 to-indigo-600 text-white"
-                  }`}
+                    }`}
                 >
                   {displayContent && (
                     <div className="whitespace-pre-wrap">{displayContent}</div>
@@ -247,6 +242,7 @@ export default function ChatInterface() {
           className="flex gap-3 pt-4 border-t border-white/[0.06]"
         >
           <input
+            suppressHydrationWarning
             ref={inputRef}
             value={input}
             onChange={handleInputChange}
@@ -259,6 +255,7 @@ export default function ChatInterface() {
                        disabled:opacity-50 transition-all duration-200"
           />
           <button
+            suppressHydrationWarning
             type="submit"
             disabled={isLoading || !input.trim()}
             className="px-4 py-3 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white 
@@ -280,22 +277,22 @@ export default function ChatInterface() {
           {/* Tab bar */}
           <div className="flex items-center gap-1 mb-4 bg-white/[0.04] p-1 rounded-xl border border-white/[0.08]">
             <button
+              suppressHydrationWarning
               onClick={() => setActiveTab("table")}
-              className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                activeTab === "table"
+              className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${activeTab === "table"
                   ? "bg-violet-600 text-white shadow-md shadow-violet-500/25"
                   : "text-gray-400 hover:text-gray-300 hover:bg-white/[0.05]"
-              }`}
+                }`}
             >
               📊 Table View
             </button>
             <button
+              suppressHydrationWarning
               onClick={() => setActiveTab("diagram")}
-              className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                activeTab === "diagram"
+              className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${activeTab === "diagram"
                   ? "bg-violet-600 text-white shadow-md shadow-violet-500/25"
                   : "text-gray-400 hover:text-gray-300 hover:bg-white/[0.05]"
-              }`}
+                }`}
             >
               🗺️ Flowchart
             </button>
