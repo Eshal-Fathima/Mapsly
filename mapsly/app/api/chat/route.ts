@@ -2,12 +2,13 @@
 // Mapsly — Chat API Route (Claude Streaming with Tool Calling)
 // =============================================================================
 
-import { streamText, tool, UIMessage, convertToModelMessages } from "ai";
+import { streamText, tool, UIMessage, convertToModelMessages, stepCountIs } from "ai";
 import { z } from "zod";
 import { anthropic, CLAUDE_MODEL, SYSTEM_PROMPT } from "@/lib/claude";
 import { searchTools } from "@/lib/tavily";
 
 export const maxDuration = 60;
+export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   try {
@@ -49,16 +50,11 @@ export async function POST(req: Request) {
 
     // Validate last message content length
     const lastMessage = messages[messages.length - 1];
-    if (lastMessage) {
-      const lastContent =
-        typeof lastMessage.content === "string"
-          ? lastMessage.content
-          : Array.isArray(lastMessage.parts)
-          ? lastMessage.parts
-              .filter((p: { type: string }) => p.type === "text")
-              .map((p: { type: string; text?: string }) => p.text ?? "")
-              .join("")
-          : "";
+    if (lastMessage && Array.isArray(lastMessage.parts)) {
+      const lastContent = lastMessage.parts
+        .filter((p) => p.type === "text")
+        .map((p) => ("text" in p ? (p as { type: string; text: string }).text : ""))
+        .join("");
       if (lastContent.trim().length > 2000) {
         return new Response(
           JSON.stringify({ error: "Message too long (max 2000 characters)" }),
@@ -71,12 +67,12 @@ export async function POST(req: Request) {
     const result = streamText({
       model: anthropic(CLAUDE_MODEL),
       system: SYSTEM_PROMPT,
-      messages: convertToModelMessages(messages),
+      messages: await convertToModelMessages(messages),
       tools: {
         search_tools: tool({
           description:
             "Search the web for the latest AI tools relevant to the user's project. Call this BEFORE recommending any tools.",
-          parameters: z.object({
+          inputSchema: z.object({
             query: z
               .string()
               .describe(
@@ -89,7 +85,7 @@ export async function POST(req: Request) {
           },
         }),
       },
-      maxSteps: 3,
+      stopWhen: stepCountIs(3),
     });
 
     return result.toUIMessageStreamResponse();

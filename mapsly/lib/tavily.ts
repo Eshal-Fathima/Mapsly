@@ -4,14 +4,6 @@
 
 import { TavilyResult } from "./types";
 
-// ---------- Environment validation ----------
-if (!process.env.TAVILY_API_KEY) {
-  throw new Error(
-    "TAVILY_API_KEY is not set. Add it to .env.local before starting the app."
-  );
-}
-
-const TAVILY_API_KEY = process.env.TAVILY_API_KEY;
 const TAVILY_ENDPOINT = "https://api.tavily.com/search";
 
 /**
@@ -19,6 +11,14 @@ const TAVILY_ENDPOINT = "https://api.tavily.com/search";
  * Returns a trimmed array of results (title, url, snippet).
  */
 export async function searchTools(query: string): Promise<TavilyResult[]> {
+  const TAVILY_API_KEY = process.env.TAVILY_API_KEY;
+
+  if (!TAVILY_API_KEY) {
+    throw new Error(
+      "TAVILY_API_KEY is not set. Add it to .env.local before starting the app."
+    );
+  }
+
   const response = await fetch(TAVILY_ENDPOINT, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

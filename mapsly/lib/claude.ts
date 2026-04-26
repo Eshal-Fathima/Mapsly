@@ -4,13 +4,6 @@
 
 import { createAnthropic } from "@ai-sdk/anthropic";
 
-// ---------- Environment validation ----------
-if (!process.env.ANTHROPIC_API_KEY) {
-  throw new Error(
-    "ANTHROPIC_API_KEY is not set. Add it to .env.local before starting the app."
-  );
-}
-
 // ---------- Anthropic provider ----------
 export const anthropic = createAnthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,

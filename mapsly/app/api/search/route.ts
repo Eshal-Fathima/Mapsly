@@ -4,6 +4,8 @@
 
 import { searchTools } from "@/lib/tavily";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req: Request) {
   try {
     // ---------- Content-Type check ----------

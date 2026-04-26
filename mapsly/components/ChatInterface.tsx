@@ -5,6 +5,7 @@
 // =============================================================================
 
 import { useChat } from "@ai-sdk/react";
+import { DefaultChatTransport } from "ai";
 import { useState, useRef, useEffect, useMemo } from "react";
 import {
   Send,
@@ -58,14 +59,29 @@ function stripWorkflowBlock(text: string): string {
 }
 
 export default function ChatInterface() {
-  const { messages, input, handleInputChange, handleSubmit, status, error } =
-    useChat({ api: "/api/chat" });
+  const [input, setInput] = useState("");
+  const { messages, sendMessage, status, error } = useChat({
+    transport: new DefaultChatTransport({ api: "/api/chat" }),
+  });
 
   const isLoading = status === "streaming" || status === "submitted";
 
   const [activeTab, setActiveTab] = useState<"table" | "diagram">("table");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim() || isLoading) return;
+
+    const currentInput = input;
+    setInput("");
+    await sendMessage({ text: currentInput });
+  };
 
   // Auto-scroll to latest message
   useEffect(() => {
@@ -130,22 +146,7 @@ export default function ChatInterface() {
                 ].map((suggestion) => (
                   <button
                     key={suggestion}
-                    onClick={() => {
-                      const nativeInputValueSetter =
-                        Object.getOwnPropertyDescriptor(
-                          window.HTMLInputElement.prototype,
-                          "value"
-                        )?.set;
-                      if (inputRef.current && nativeInputValueSetter) {
-                        nativeInputValueSetter.call(
-                          inputRef.current,
-                          suggestion
-                        );
-                        inputRef.current.dispatchEvent(
-                          new Event("input", { bubbles: true })
-                        );
-                      }
-                    }}
+                    onClick={() => setInput(suggestion)}
                     className="text-xs px-3 py-2 rounded-xl bg-white/5 text-gray-300 border border-white/10 
                                hover:bg-violet-500/20 hover:border-violet-500/30 hover:text-violet-300 
                                transition-all duration-200 cursor-pointer"
