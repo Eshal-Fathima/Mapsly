@@ -27,40 +27,40 @@ interface WorkflowDiagramProps {
 // ---------- Custom Node Component ----------
 function StepNode({ data }: NodeProps) {
   return (
-    <div className="bg-[#1a1a2e] border border-white/10 rounded-xl px-5 py-4 min-w-[260px] max-w-[300px] shadow-lg shadow-black/30">
+    <div className="bg-[#1a1a2e] border border-white/10 rounded-2xl px-6 py-5 min-w-[280px] shadow-lg shadow-black/40">
       <Handle
         type="target"
-        position={Position.Top}
+        position={Position.Left}
         className="!bg-violet-500 !w-3 !h-3 !border-2 !border-[#0f0f1a]"
       />
 
       {/* Step header */}
-      <div className="flex items-center gap-2 mb-2">
-        <span className="inline-flex items-center justify-center w-6 h-6 rounded-md bg-gradient-to-br from-violet-500 to-indigo-600 text-white text-xs font-bold">
+      <div className="flex items-center gap-3 mb-3">
+        <span className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-600 text-white text-[13px] font-bold">
           {data.stepNumber as number}
         </span>
-        <span className="text-white text-sm font-semibold leading-tight">
+        <span className="text-white text-[15px] font-bold leading-tight">
           {data.task as string}
         </span>
       </div>
 
       {/* Tools */}
-      <div className="flex flex-col gap-1 text-xs">
-        <div className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0" />
-          <span className="text-gray-400">Free:</span>
-          <span className="text-emerald-400 font-medium">{data.freeTool as string}</span>
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center gap-2">
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 flex-shrink-0" />
+          <span className="text-gray-400 text-[13px]">Free:</span>
+          <span className="text-emerald-400 font-semibold text-[14px]">{data.freeTool as string}</span>
         </div>
-        <div className="flex items-center gap-1.5">
-          <span className="w-2 h-2 rounded-full bg-amber-400 flex-shrink-0" />
-          <span className="text-gray-400">Paid:</span>
-          <span className="text-amber-400 font-medium">{data.paidTool as string}</span>
+        <div className="flex items-center gap-2">
+          <span className="w-2.5 h-2.5 rounded-full bg-amber-400 flex-shrink-0" />
+          <span className="text-gray-400 text-[13px]">Paid:</span>
+          <span className="text-amber-400 font-semibold text-[14px]">{data.paidTool as string}</span>
         </div>
       </div>
 
       <Handle
         type="source"
-        position={Position.Bottom}
+        position={Position.Right}
         className="!bg-violet-500 !w-3 !h-3 !border-2 !border-[#0f0f1a]"
       />
     </div>
@@ -75,7 +75,7 @@ export default function WorkflowDiagram({ workflow }: WorkflowDiagramProps) {
     const n: Node[] = workflow.steps.map((step, i) => ({
       id: `step-${step.stepNumber}`,
       type: "stepNode",
-      position: { x: 0, y: i * 160 },
+      position: { x: i * 360, y: 150 },
       data: {
         stepNumber: step.stepNumber,
         task: step.task,
@@ -83,11 +83,6 @@ export default function WorkflowDiagram({ workflow }: WorkflowDiagramProps) {
         paidTool: step.paidTool,
       },
     }));
-
-    // Center nodes horizontally
-    n.forEach((node) => {
-      node.position.x = 150;
-    });
 
     const e: Edge[] = workflow.steps.slice(0, -1).map((step, i) => ({
       id: `edge-${step.stepNumber}-${workflow.steps[i + 1].stepNumber}`,
@@ -110,7 +105,7 @@ export default function WorkflowDiagram({ workflow }: WorkflowDiagramProps) {
   }, []);
 
   return (
-    <div style={{ height: "100%", minHeight: 500 }} className="w-full">
+    <div style={{ height: 600, minHeight: 600 }} className="w-full">
       <ReactFlow
         nodes={nodes}
         edges={edges}

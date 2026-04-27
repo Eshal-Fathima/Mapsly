@@ -104,14 +104,12 @@ export default function ChatInterface() {
   }, [messages]);
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6 w-full max-w-full mx-auto h-[calc(100vh-12rem)] pl-6 pr-0">
+    <div className="flex flex-col gap-8 w-full max-w-full mx-auto pb-12 overflow-y-auto scrollbar-thin">
       {/* ================================================================= */}
       {/* CHAT PANEL                                                        */}
       {/* ================================================================= */}
       <div
-        className={`flex flex-col ${
-          latestWorkflow ? "lg:w-1/2" : "w-full max-w-full mx-auto"
-        } transition-all duration-500`}
+        className="flex flex-col w-full max-w-full mx-auto px-6 transition-all duration-500"
       >
         {/* Messages area */}
         <div className="flex-1 overflow-y-auto space-y-4 pb-4 scrollbar-thin">
@@ -277,7 +275,7 @@ export default function ChatInterface() {
       {/* WORKFLOW PANEL (appears when workflow is generated)                */}
       {/* ================================================================= */}
       {latestWorkflow && (
-        <div className="lg:w-1/2 flex flex-col animate-slide-in-right">
+        <div className="w-full flex flex-col animate-slide-up px-6">
           {/* Tab bar */}
           <div className="flex items-center gap-1 mb-4 bg-white/[0.04] p-1 rounded-xl border border-white/[0.08]">
             <button
