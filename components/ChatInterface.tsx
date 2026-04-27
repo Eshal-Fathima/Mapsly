@@ -104,17 +104,17 @@ export default function ChatInterface() {
   }, [messages]);
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6 w-full max-w-7xl mx-auto h-[calc(100vh-12rem)]">
+    <div className="flex flex-col lg:flex-row gap-6 w-full max-w-full mx-auto h-[calc(100vh-12rem)] pl-6 pr-0">
       {/* ================================================================= */}
       {/* CHAT PANEL                                                        */}
       {/* ================================================================= */}
       <div
         className={`flex flex-col ${
-          latestWorkflow ? "lg:w-1/2" : "w-full max-w-3xl mx-auto"
+          latestWorkflow ? "lg:w-1/2" : "w-full max-w-full mx-auto"
         } transition-all duration-500`}
       >
         {/* Messages area */}
-        <div className="flex-1 overflow-y-auto space-y-4 pr-2 pb-4 scrollbar-thin">
+        <div className="flex-1 overflow-y-auto space-y-4 pb-4 scrollbar-thin">
           {messages.length === 0 && (
             <div className="flex flex-col items-center justify-center h-full text-center space-y-6 animate-fade-in">
               <div className="relative">

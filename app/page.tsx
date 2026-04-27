@@ -43,18 +43,10 @@ export default function Home() {
       {/* ================================================================= */}
       {/* MAIN CONTENT — CHAT                                               */}
       {/* ================================================================= */}
-      <section className="flex-1 px-4 sm:px-6 py-6">
+      <section className="flex-1 py-6">
         <ChatInterface />
       </section>
 
-      {/* ================================================================= */}
-      {/* FOOTER                                                            */}
-      {/* ================================================================= */}
-      <footer className="px-6 py-3 border-t border-white/[0.06] text-center">
-        <p className="text-xs text-gray-600">
-          Powered by Claude &middot; Tavily &middot; Built with Next.js
-        </p>
-      </footer>
     </main>
   );
 }
