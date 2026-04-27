@@ -25,9 +25,12 @@ interface WorkflowDiagramProps {
 }
 
 // ---------- Custom Node Component ----------
+// ---------- Custom Node Component ----------
 function StepNode({ data }: NodeProps) {
+  if (!data) return null;
+
   return (
-    <div className="bg-[#1a1a2e] border border-white/10 rounded-2xl px-6 py-5 min-w-[280px] shadow-lg shadow-black/40">
+    <div className="bg-[#1a1a2e] border border-white/10 rounded-2xl p-6 min-w-[280px] min-h-[160px] shadow-lg shadow-black/40 flex flex-col gap-5">
       <Handle
         type="target"
         position={Position.Left}
@@ -35,26 +38,35 @@ function StepNode({ data }: NodeProps) {
       />
 
       {/* Step header */}
-      <div className="flex items-center gap-3 mb-3">
-        <span className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-600 text-white text-[13px] font-bold">
-          {data.stepNumber as number}
+      <div className="flex items-start gap-4">
+        <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-600 text-white text-[14px] font-bold flex-shrink-0">
+          {(data.stepNumber as number) ?? "?"}
         </span>
-        <span className="text-white text-[15px] font-bold leading-tight">
-          {data.task as string}
-        </span>
+        <h3 className="text-white text-[16px] font-bold leading-snug whitespace-normal break-words">
+          {(data.task as string) ?? "N/A"}
+        </h3>
       </div>
 
-      {/* Tools */}
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 flex-shrink-0" />
-          <span className="text-gray-400 text-[13px]">Free:</span>
-          <span className="text-emerald-400 font-semibold text-[14px]">{data.freeTool as string}</span>
+      {/* Tools - Stacked vertically */}
+      <div className="flex flex-col gap-4 mt-auto">
+        <div className="flex flex-col gap-1.5">
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 flex-shrink-0" />
+            <span className="text-gray-400 text-[12px] uppercase tracking-wider font-semibold">Free Tool</span>
+          </div>
+          <p className="text-emerald-400 font-bold text-[14px] pl-5 whitespace-normal break-words leading-tight">
+            {(data.freeTool as string) ?? "N/A"}
+          </p>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-amber-400 flex-shrink-0" />
-          <span className="text-gray-400 text-[13px]">Paid:</span>
-          <span className="text-amber-400 font-semibold text-[14px]">{data.paidTool as string}</span>
+
+        <div className="flex flex-col gap-1.5">
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-amber-400 flex-shrink-0" />
+            <span className="text-gray-400 text-[12px] uppercase tracking-wider font-semibold">Paid Tool</span>
+          </div>
+          <p className="text-amber-400 font-bold text-[14px] pl-5 whitespace-normal break-words leading-tight">
+            {(data.paidTool as string) ?? "N/A"}
+          </p>
         </div>
       </div>
 
@@ -72,30 +84,36 @@ const nodeTypes = { stepNode: StepNode };
 export default function WorkflowDiagram({ workflow }: WorkflowDiagramProps) {
   // ---------- Generate nodes & edges ----------
   const { nodes, edges } = useMemo(() => {
+    if (!workflow || !Array.isArray(workflow.steps)) {
+       return { nodes: [], edges: [] };
+    }
+
     const n: Node[] = workflow.steps.map((step, i) => ({
-      id: `step-${step.stepNumber}`,
+      id: `step-${step?.stepNumber ?? i}`,
       type: "stepNode",
       position: { x: i * 360, y: 150 },
       data: {
-        stepNumber: step.stepNumber,
-        task: step.task,
-        freeTool: step.freeTool,
-        paidTool: step.paidTool,
+        stepNumber: step?.stepNumber,
+        task: step?.task,
+        freeTool: step?.freeTool,
+        paidTool: step?.paidTool,
       },
     }));
 
-    const e: Edge[] = workflow.steps.slice(0, -1).map((step, i) => ({
-      id: `edge-${step.stepNumber}-${workflow.steps[i + 1].stepNumber}`,
-      source: `step-${step.stepNumber}`,
-      target: `step-${workflow.steps[i + 1].stepNumber}`,
-      type: "smoothstep",
-      animated: true,
-      style: { stroke: "#8b5cf6", strokeWidth: 2 },
-      markerEnd: {
-        type: MarkerType.ArrowClosed,
-        color: "#8b5cf6",
-      },
-    }));
+    const e: Edge[] = (workflow.steps.length > 1) 
+      ? workflow.steps.slice(0, -1).map((step, i) => ({
+          id: `edge-${step?.stepNumber ?? i}-${workflow.steps[i+1]?.stepNumber ?? (i+1)}`,
+          source: `step-${step?.stepNumber ?? i}`,
+          target: `step-${workflow.steps[i + 1]?.stepNumber ?? (i+1)}`,
+          type: "smoothstep",
+          animated: true,
+          style: { stroke: "#8b5cf6", strokeWidth: 2 },
+          markerEnd: {
+            type: MarkerType.ArrowClosed,
+            color: "#8b5cf6",
+          },
+        }))
+      : [];
 
     return { nodes: n, edges: e };
   }, [workflow]);

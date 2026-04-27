@@ -21,11 +21,14 @@ import WorkflowTable from "./WorkflowTable";
 import WorkflowDiagram from "./WorkflowDiagram";
 
 /** Get plain text content from a message (handles both v5 string content and v6 parts) */
+/** Get plain text content from a message (handles both v5 string content and v6 parts) */
 function getMessageText(message: { content?: string; parts?: Array<{ type: string; text?: string }> }): string {
+  if (!message) return "";
+  
   if (message.parts && Array.isArray(message.parts)) {
     return message.parts
-      .filter((p) => p.type === "text")
-      .map((p) => p.text ?? "")
+      .filter((p) => p && p.type === "text")
+      .map((p) => p?.text ?? "")
       .join("");
   }
   if (typeof message.content === "string") {
@@ -36,23 +39,32 @@ function getMessageText(message: { content?: string; parts?: Array<{ type: strin
 
 /** Extract workflow JSON from ```workflow code blocks */
 function parseWorkflow(text: string): Workflow | null {
+  if (!text) return null;
+  
   const regex = /```workflow\s*([\s\S]*?)```/;
   const match = text.match(regex);
   if (!match || !match[1]) return null;
 
   try {
-    const parsed = JSON.parse(match[1].trim());
-    if (parsed && Array.isArray(parsed.steps) && parsed.steps.length > 0) {
-      return parsed as Workflow;
+    const rawJson = match[1].trim();
+    if (!rawJson) return null;
+    
+    const parsed = JSON.parse(rawJson);
+    if (parsed && typeof parsed === "object" && Array.isArray(parsed.steps)) {
+      // Basic structure validation
+      if (parsed.steps.length > 0) {
+        return parsed as Workflow;
+      }
     }
-  } catch {
-    // graceful fallback
+  } catch (err) {
+    console.error("[ChatInterface] Failed to parse workflow JSON:", err);
   }
   return null;
 }
 
 /** Strip workflow code block from display text */
 function stripWorkflowBlock(text: string): string {
+  if (!text) return "";
   return text.replace(/```workflow\s*[\s\S]*?```/g, "").trim();
 }
 
@@ -60,6 +72,9 @@ export default function ChatInterface() {
   const [input, setInput] = useState("");
   const { messages, sendMessage, status, error } = useChat({
     transport: new DefaultChatTransport({ api: "/api/chat" }),
+    onError: (err) => {
+      console.error("[ChatInterface] useChat error:", err);
+    }
   });
 
   const isLoading = status === "streaming" || status === "submitted";
@@ -69,21 +84,27 @@ export default function ChatInterface() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInput(e.target.value);
+    setInput(e.target.value ?? "");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || isLoading) return;
+    if (!input || !input.trim() || isLoading) return;
 
-    const currentInput = input;
-    setInput("");
-    await sendMessage({ text: currentInput });
+    try {
+      const currentInput = input;
+      setInput("");
+      await sendMessage({ text: currentInput });
+    } catch (err) {
+      console.error("[ChatInterface] handleSubmit error:", err);
+    }
   };
 
   // Auto-scroll to latest message
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
   }, [messages]);
 
   // Focus input on mount
@@ -93,11 +114,16 @@ export default function ChatInterface() {
 
   // Find the latest workflow from any assistant message
   const latestWorkflow = useMemo(() => {
+    if (!messages || !Array.isArray(messages)) return null;
+    
     for (let i = messages.length - 1; i >= 0; i--) {
-      if (messages[i].role === "assistant") {
-        const text = getMessageText(messages[i]);
-        const wf = parseWorkflow(text);
-        if (wf) return wf;
+      const msg = messages[i];
+      if (msg && msg.role === "assistant") {
+        const text = getMessageText(msg);
+        if (text) {
+          const wf = parseWorkflow(text);
+          if (wf) return wf;
+        }
       }
     }
     return null;

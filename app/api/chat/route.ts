@@ -91,7 +91,7 @@ export async function POST(req: Request) {
     const lastMessage = messages[messages.length - 1];
     if (lastMessage && Array.isArray(lastMessage.parts)) {
       const lastContent = lastMessage.parts
-        .filter((p) => p.type === "text")
+        .filter((p) => p && p.type === "text")
         .map((p) => ("text" in p ? (p as { type: string; text: string }).text : ""))
         .join("");
       if (lastContent.trim().length > 2000) {
@@ -107,7 +107,10 @@ export async function POST(req: Request) {
     const result = streamText({
       model,
       system: SYSTEM_PROMPT,
-      messages: await convertToModelMessages(messages),
+      messages: await convertToModelMessages(messages).catch(err => {
+        console.error("[chat/route] Conversion failed:", err);
+        return [];
+      }),
       tools: {
         search_tools: tool({
           description:
@@ -120,8 +123,13 @@ export async function POST(req: Request) {
               ),
           }),
           execute: async ({ query }) => {
-            const results = await searchTools(query);
-            return results;
+            try {
+              const results = await searchTools(query);
+              return results ?? [];
+            } catch (err) {
+              console.error("[chat/route] Tool execution failed:", err);
+              return []; // Return empty results to avoid breaking the whole stream
+            }
           },
         }),
       },
@@ -130,9 +138,9 @@ export async function POST(req: Request) {
 
     return result.toUIMessageStreamResponse();
   } catch (error) {
-    console.error("[chat/route] Error:", error);
+    console.error("[chat/route] Primary error:", error);
     return new Response(
-      JSON.stringify({ error: "An internal error occurred. Please try again." }),
+      JSON.stringify({ error: "Something went wrong, please try again." }),
       { status: 500, headers: { "Content-Type": "application/json" } }
     );
   }
