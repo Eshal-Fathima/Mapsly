@@ -11,7 +11,7 @@ export interface WorkflowStep {
   reason: string;
 }
 
-/** The full workflow output from Claude */
+/** The full workflow output from Groq */
 export interface Workflow {
   projectSummary: string;
   steps: WorkflowStep[];

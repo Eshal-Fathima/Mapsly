@@ -3,7 +3,7 @@
 > Tell Mapsly what you want to build, and it maps out the perfect AI-powered workflow — with the best free and paid tools for every step.
 
 ![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)
-![Claude](https://img.shields.io/badge/Claude-Sonnet%204-blueviolet?logo=anthropic)
+![Groq](https://img.shields.io/badge/Groq-Llama%203.3-orange?logo=groq)
 ![Tavily](https://img.shields.io/badge/Tavily-Search-blue)
 ![Tailwind](https://img.shields.io/badge/Tailwind%20CSS-4-06B6D4?logo=tailwindcss)
 
@@ -25,7 +25,7 @@ No database, no sign-up — fully stateless.
 ## Prerequisites
 
 - **Node.js 20+** ([download](https://nodejs.org/))
-- **Anthropic API key** ([get one](https://console.anthropic.com/))
+- **Groq API key** ([get one](https://console.groq.com/))
 - **Tavily API key** ([get one](https://app.tavily.com/))
 
 ---
@@ -44,7 +44,7 @@ npm install
 cp .env.local.example .env.local
 
 # 4. Add your API keys to .env.local
-#    ANTHROPIC_API_KEY=sk-ant-...
+#    GROQ_API_KEY=gsk_...
 #    TAVILY_API_KEY=tvly-...
 
 # 5. Start the dev server
@@ -57,8 +57,8 @@ Open [http://localhost:3000](http://localhost:3000) and start describing your pr
 
 ## How to Get API Keys
 
-### Anthropic (Claude)
-1. Go to [console.anthropic.com](https://console.anthropic.com/)
+### Groq (Llama 3)
+1. Go to [console.groq.com](https://console.groq.com/)
 2. Sign up or log in
 3. Navigate to **API Keys**
 4. Create a new key and copy it
@@ -78,7 +78,7 @@ Open [http://localhost:3000](http://localhost:3000) and start describing your pr
 4. Connect your GitHub repo
 5. Netlify will auto-detect the build settings from `netlify.toml`
 6. Go to **Site settings → Environment variables** and add:
-   - `ANTHROPIC_API_KEY`
+   - `GROQ_API_KEY`
    - `TAVILY_API_KEY`
 7. Trigger a deploy
 
@@ -99,7 +99,7 @@ Open [http://localhost:3000](http://localhost:3000) and start describing your pr
 | ----------- | ----------------------------------- |
 | Framework   | Next.js 15 (App Router, TypeScript) |
 | Styling     | Tailwind CSS 4                      |
-| LLM         | Claude Sonnet 4 (via Vercel AI SDK) |
+| LLM         | Llama 3.3 70B (via Groq)            |
 | Web Search  | Tavily API                          |
 | Diagrams    | ReactFlow                           |
 | Deployment  | Netlify                             |

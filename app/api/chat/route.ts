@@ -1,10 +1,8 @@
-// =============================================================================
-// Mapsly — Chat API Route (Gemini Streaming with Tool Calling)
-// =============================================================================
+// Mapsly — Chat API Route (Groq Streaming with Tool Calling)
 
 import { streamText, tool, UIMessage, convertToModelMessages, stepCountIs } from "ai";
 import { z } from "zod";
-import { google } from "@ai-sdk/google";
+import { groq } from "@ai-sdk/groq";
 import { searchTools } from "@/lib/tavily";
 
 export const maxDuration = 60;
@@ -104,8 +102,8 @@ export async function POST(req: Request) {
       }
     }
 
-    // ---------- Stream with Gemini ----------
-    const model = google("gemini-2.0-flash");
+    // ---------- Stream with Groq ----------
+    const model = groq("llama-3.3-70b-versatile");
     const result = streamText({
       model,
       system: SYSTEM_PROMPT,
