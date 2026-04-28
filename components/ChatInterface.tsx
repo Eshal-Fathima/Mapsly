@@ -93,7 +93,9 @@ export default function ChatInterface() {
     try {
       const currentInput = input;
       setInput("");
-      await sendMessage({ text: currentInput });
+      await sendMessage({
+        text: currentInput,
+      });
     } catch (err) {
       console.error("[ChatInterface] handleSubmit error:", err);
     }
@@ -101,14 +103,26 @@ export default function ChatInterface() {
 
   // Auto-scroll to latest message
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    try {
+      if (messagesEndRef.current) {
+        messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+      }
+    } catch (err) {
+      console.error("[ChatInterface] Auto-scroll error:", err);
     }
   }, [messages]);
 
-  // Focus input on mount
+  // Focus input on mount & Global rejection catch
   useEffect(() => {
     inputRef.current?.focus();
+
+    const handleRejection = (event: PromiseRejectionEvent) => {
+      console.error("[Global] Unhandled promise rejection:", event.reason);
+      event.preventDefault();
+    };
+
+    window.addEventListener("unhandledrejection", handleRejection);
+    return () => window.removeEventListener("unhandledrejection", handleRejection);
   }, []);
 
   // Find the latest workflow from any assistant message
@@ -129,37 +143,38 @@ export default function ChatInterface() {
   }, [messages]);
 
   return (
-    <div className="flex flex-col gap-8 w-full max-w-full mx-auto pb-12 overflow-y-auto scrollbar-thin">
+    <div className="flex flex-col w-full h-full max-w-full mx-auto overflow-hidden">
       {/* ================================================================= */}
       {/* CHAT PANEL                                                        */}
       {/* ================================================================= */}
       <div
-        className="flex flex-col w-full max-w-full mx-auto px-6 transition-all duration-500"
+        className="flex-1 flex flex-col w-full max-w-full mx-auto px-6 overflow-hidden min-h-0"
       >
         {/* Messages area */}
         <div className="flex-1 overflow-y-auto space-y-4 pb-4 scrollbar-thin">
           {messages.length === 0 && (
-            <div className="flex flex-col items-center justify-center h-full text-center space-y-8 animate-fade-in py-20 px-4">
-              <div className="relative">
-                <div className="w-24 h-24 rounded-3xl bg-surface-container flex items-center justify-center shadow-2xl border border-white/10 accent-glow">
+            <div className="flex flex-col items-center justify-center flex-1 text-center space-y-10 animate-fade-in py-8 px-4 overflow-hidden">
+              <div className="relative flex-shrink-0 mb-4">
+                <div className="w-24 h-24 rounded-3xl bg-surface-container flex items-center justify-center shadow-2xl border border-white/10 accent-glow transform hover:scale-110 transition-transform duration-500">
                   <Map className="w-12 h-12 text-primary-container" />
                 </div>
-                <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-primary-container flex items-center justify-center shadow-lg">
-                  <Sparkles className="w-4 h-4 text-white" />
+                <div className="absolute -top-2 -right-2 w-10 h-10 rounded-full bg-primary-container flex items-center justify-center shadow-lg animate-pulse">
+                  <Sparkles className="w-5 h-5 text-white" />
                 </div>
               </div>
 
-              <div className="max-w-2xl">
-                <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-4 tracking-tight leading-flex">
-                  What are you <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#d2bbff] to-[#7c3aed]">building?</span>
+              <div className="max-w-4xl flex-shrink-0">
+                <h2 className="text-5xl md:text-7xl font-black text-white mb-6 tracking-tighter leading-[1.1]">
+                  What are you <br className="hidden md:block" />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#d2bbff] to-[#7c3aed]">building?</span>
                 </h2>
-                <p className="text-outline max-w-lg mx-auto text-base md:text-lg leading-relaxed">
+                <p className="text-outline max-w-2xl mx-auto text-lg md:text-xl leading-relaxed font-medium">
                   Tell me about your project and I&apos;ll map out the perfect
                   AI-powered workflow with the best tools available.
                 </p>
               </div>
 
-              <div className="flex flex-wrap gap-3 justify-center max-w-2xl">
+              <div className="flex flex-wrap gap-4 justify-center max-w-4xl flex-shrink-0">
                 {[
                   "A mobile app that identifies plants from photos",
                   "An AI chatbot for customer support",
@@ -170,8 +185,9 @@ export default function ChatInterface() {
                     suppressHydrationWarning
                     key={suggestion}
                     onClick={() => setInput(suggestion)}
-                    className="glass-card px-4 py-2.5 rounded-full text-sm text-on-surface hover:border-[#7c3aed]/50 
-                               hover:bg-primary-container/10 transition-all duration-300 cursor-pointer flex items-center gap-2 group"
+                    className="glass-card px-6 py-3 rounded-full text-sm md:text-base text-on-surface font-semibold
+                               hover:border-[#7c3aed]/50 hover:bg-primary-container/10 transition-all duration-300 
+                               cursor-pointer flex items-center gap-3 group"
                   >
                     <span className="text-primary-container group-hover:scale-125 transition-transform">✦</span>
                     {suggestion}
@@ -179,10 +195,10 @@ export default function ChatInterface() {
                 ))}
               </div>
               
-              <div className="flex items-center gap-2 text-outline text-xs mt-4 opacity-60">
-                <div className="w-px h-8 bg-gradient-to-b from-transparent via-[#7c3aed]/30 to-transparent"></div>
-                <span>Describe your idea below to generate a workflow map</span>
-                <div className="w-px h-8 bg-gradient-to-b from-transparent via-[#7c3aed]/30 to-transparent"></div>
+              <div className="flex items-center gap-4 text-outline text-xs mt-6 opacity-60 flex-shrink-0 font-bold uppercase tracking-widest">
+                <div className="w-12 h-px bg-gradient-to-r from-transparent to-[#7c3aed]/50"></div>
+                <span>Describe your idea below to map it</span>
+                <div className="w-12 h-px bg-gradient-to-l from-transparent to-[#7c3aed]/50"></div>
               </div>
             </div>
           )}
@@ -269,7 +285,7 @@ export default function ChatInterface() {
         {/* Input area */}
         <form
           onSubmit={handleSubmit}
-          className="flex gap-4 p-2 glass-card accent-glow border-white/20 rounded-2xl mt-4"
+          className="flex-shrink-0 flex gap-4 p-1.5 glass-card accent-glow border-white/20 rounded-xl mb-4"
         >
           <input
             suppressHydrationWarning
