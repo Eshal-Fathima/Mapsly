@@ -111,16 +111,12 @@ export async function POST(req: Request) {
         console.error("[chat/route] Conversion failed:", err);
         return [];
       }),
+      toolChoice: "auto",
       tools: {
         search_tools: tool({
-          description:
-            "Search the web for the latest AI tools relevant to the user's project. Call this BEFORE recommending any tools.",
+          description: "Search for current AI tools online.",
           inputSchema: z.object({
-            query: z
-              .string()
-              .describe(
-                "Search query to find relevant AI tools, e.g. 'best AI tools for mobile app development 2025 free and paid'"
-              ),
+            query: z.string().describe("The search query for tool discovery."),
           }),
           execute: async ({ query }) => {
             try {
@@ -128,7 +124,7 @@ export async function POST(req: Request) {
               return results ?? [];
             } catch (err) {
               console.error("[chat/route] Tool execution failed:", err);
-              return []; // Return empty results to avoid breaking the whole stream
+              return [];
             }
           },
         }),

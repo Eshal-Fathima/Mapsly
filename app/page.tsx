@@ -7,23 +7,23 @@ export default function Home() {
       {/* ================================================================= */}
       {/* HEADER                                                            */}
       {/* ================================================================= */}
-      <header className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06]">
+      <header className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 bg-[#0d0d1a]/80 backdrop-blur-md border-b border-white/10 transition-all duration-300">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/20">
-            <Map className="w-5 h-5 text-white" />
+          <div className="w-10 h-10 rounded-xl bg-primary-container flex items-center justify-center shadow-lg shadow-primary-container/20">
+            <Map className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-white tracking-tight">
+            <h1 className="text-xl font-bold text-white tracking-tight leading-none">
               Mapsly
             </h1>
-            <p className="text-[10px] text-gray-500 -mt-0.5 font-medium uppercase tracking-widest">
+            <p className="text-[10px] text-outline mt-1 font-bold uppercase tracking-[0.2em]">
               AI Workflow Map
             </p>
           </div>
         </div>
 
         {/* Feature pills */}
-        <div className="hidden md:flex items-center gap-2">
+        <div className="hidden md:flex items-center gap-3">
           {[
             { icon: Sparkles, label: "AI-Powered" },
             { icon: Zap, label: "Real-time Search" },
@@ -31,9 +31,9 @@ export default function Home() {
           ].map(({ icon: Icon, label }) => (
             <div
               key={label}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-xs text-gray-400"
+              className="glass-card flex items-center gap-2 px-4 py-2 rounded-full text-xs text-outline hover:text-white transition-colors cursor-default"
             >
-              <Icon className="w-3 h-3 text-violet-400" />
+              <Icon className="w-3.5 h-3.5 text-primary-container" />
               {label}
             </div>
           ))}
@@ -43,9 +43,18 @@ export default function Home() {
       {/* ================================================================= */}
       {/* MAIN CONTENT — CHAT                                               */}
       {/* ================================================================= */}
-      <section className="flex-1 py-6">
+      <section className="flex-1 pt-24 pb-8">
         <ChatInterface />
       </section>
+
+      {/* ================================================================= */}
+      {/* FOOTER                                                            */}
+      {/* ================================================================= */}
+      <footer className="py-8 px-6 bg-[#0d0d1a] border-t border-white/5 text-center">
+        <p className="text-slate-500 text-sm">
+          &copy; {new Date().getFullYear()} Mapsly — Built with Next.js and Tailwind CSS 4
+        </p>
+      </footer>
 
     </main>
   );

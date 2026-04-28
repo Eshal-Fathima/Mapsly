@@ -1,7 +1,7 @@
 "use client";
 
 // =============================================================================
-// Mapsly — Chat Interface Component
+// Mapsly — Chat Interface Component (Dark Theme Reverted)
 // =============================================================================
 
 import { useChat } from "@ai-sdk/react";
@@ -15,12 +15,12 @@ import {
   Loader2,
   Map,
   ChevronDown,
+  Zap,
 } from "lucide-react";
 import { Workflow } from "@/lib/types";
 import WorkflowTable from "./WorkflowTable";
 import WorkflowDiagram from "./WorkflowDiagram";
 
-/** Get plain text content from a message (handles both v5 string content and v6 parts) */
 /** Get plain text content from a message (handles both v5 string content and v6 parts) */
 function getMessageText(message: { content?: string; parts?: Array<{ type: string; text?: string }> }): string {
   if (!message) return "";
@@ -51,7 +51,6 @@ function parseWorkflow(text: string): Workflow | null {
     
     const parsed = JSON.parse(rawJson);
     if (parsed && typeof parsed === "object" && Array.isArray(parsed.steps)) {
-      // Basic structure validation
       if (parsed.steps.length > 0) {
         return parsed as Workflow;
       }
@@ -140,26 +139,27 @@ export default function ChatInterface() {
         {/* Messages area */}
         <div className="flex-1 overflow-y-auto space-y-4 pb-4 scrollbar-thin">
           {messages.length === 0 && (
-            <div className="flex flex-col items-center justify-center h-full text-center space-y-6 animate-fade-in">
+            <div className="flex flex-col items-center justify-center h-full text-center space-y-8 animate-fade-in py-20 px-4">
               <div className="relative">
-                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/25">
-                  <Map className="w-10 h-10 text-white" />
+                <div className="w-24 h-24 rounded-3xl bg-surface-container flex items-center justify-center shadow-2xl border border-white/10 accent-glow">
+                  <Map className="w-12 h-12 text-primary-container" />
                 </div>
-                <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-gradient-to-r from-amber-400 to-orange-500 flex items-center justify-center">
-                  <Sparkles className="w-3.5 h-3.5 text-white" />
+                <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-primary-container flex items-center justify-center shadow-lg">
+                  <Sparkles className="w-4 h-4 text-white" />
                 </div>
               </div>
-              <div>
-                <h2 className="text-2xl font-bold text-white mb-2">
-                  What are you building?
+
+              <div className="max-w-2xl">
+                <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-4 tracking-tight leading-flex">
+                  What are you <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#d2bbff] to-[#7c3aed]">building?</span>
                 </h2>
-                <p className="text-gray-400 max-w-md text-sm leading-relaxed">
+                <p className="text-outline max-w-lg mx-auto text-base md:text-lg leading-relaxed">
                   Tell me about your project and I&apos;ll map out the perfect
-                  AI-powered workflow — with the best free and paid tools for
-                  every step.
+                  AI-powered workflow with the best tools available.
                 </p>
               </div>
-              <div className="flex flex-wrap gap-2 justify-center max-w-lg">
+
+              <div className="flex flex-wrap gap-3 justify-center max-w-2xl">
                 {[
                   "A mobile app that identifies plants from photos",
                   "An AI chatbot for customer support",
@@ -170,17 +170,19 @@ export default function ChatInterface() {
                     suppressHydrationWarning
                     key={suggestion}
                     onClick={() => setInput(suggestion)}
-                    className="text-xs px-3 py-2 rounded-xl bg-white/5 text-gray-300 border border-white/10 
-                               hover:bg-violet-500/20 hover:border-violet-500/30 hover:text-violet-300 
-                               transition-all duration-200 cursor-pointer"
+                    className="glass-card px-4 py-2.5 rounded-full text-sm text-on-surface hover:border-[#7c3aed]/50 
+                               hover:bg-primary-container/10 transition-all duration-300 cursor-pointer flex items-center gap-2 group"
                   >
+                    <span className="text-primary-container group-hover:scale-125 transition-transform">✦</span>
                     {suggestion}
                   </button>
                 ))}
               </div>
-              <div className="flex items-center gap-1 text-gray-500 text-xs mt-2 animate-bounce">
-                <ChevronDown className="w-3.5 h-3.5" />
-                <span>Type below to get started</span>
+              
+              <div className="flex items-center gap-2 text-outline text-xs mt-4 opacity-60">
+                <div className="w-px h-8 bg-gradient-to-b from-transparent via-[#7c3aed]/30 to-transparent"></div>
+                <span>Describe your idea below to generate a workflow map</span>
+                <div className="w-px h-8 bg-gradient-to-b from-transparent via-[#7c3aed]/30 to-transparent"></div>
               </div>
             </div>
           )}
@@ -202,34 +204,34 @@ export default function ChatInterface() {
               >
                 {/* Avatar */}
                 <div
-                  className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${
+                  className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center ${
                     isAssistant
-                      ? "bg-gradient-to-br from-violet-500 to-indigo-600 shadow-md shadow-violet-500/20"
-                      : "bg-gradient-to-br from-emerald-500 to-teal-600 shadow-md shadow-emerald-500/20"
+                      ? "bg-surface-container border border-white/10"
+                      : "bg-surface-container-highest border border-white/10"
                   }`}
                 >
                   {isAssistant ? (
-                    <Bot className="w-4 h-4 text-white" />
+                    <Bot className="w-5 h-5 text-primary-container" />
                   ) : (
-                    <User className="w-4 h-4 text-white" />
+                    <User className="w-5 h-5 text-outline" />
                   )}
                 </div>
 
                 {/* Message bubble */}
                 <div
-                  className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+                  className={`max-w-[85%] rounded-2xl px-5 py-4 text-sm md:text-base leading-relaxed ${
                     isAssistant
-                      ? "bg-white/[0.06] text-gray-200 border border-white/[0.08]"
-                      : "bg-gradient-to-r from-violet-600 to-indigo-600 text-white"
+                      ? "glass-card text-on-surface"
+                      : "bg-primary-container text-white accent-glow"
                   }`}
                 >
                   {displayContent && (
                     <div className="whitespace-pre-wrap">{displayContent}</div>
                   )}
                   {workflow && (
-                    <div className="mt-3 text-xs text-violet-400 flex items-center gap-1.5 font-medium">
-                      <Sparkles className="w-3.5 h-3.5" />
-                      Workflow generated — see it on the right →
+                    <div className="mt-4 flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
+                      <Sparkles className="w-4 h-4 text-primary" />
+                      <span className="text-xs font-semibold text-primary uppercase tracking-wider">Workflow Generated Map</span>
                     </div>
                   )}
                 </div>
@@ -240,12 +242,12 @@ export default function ChatInterface() {
           {/* Loading indicator */}
           {isLoading && (
             <div className="flex gap-3 animate-slide-up">
-              <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-md shadow-violet-500/20">
-                <Bot className="w-4 h-4 text-white" />
+              <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-surface-container border border-white/10 flex items-center justify-center shadow-lg">
+                <Bot className="w-5 h-5 text-primary-container" />
               </div>
-              <div className="bg-white/[0.06] border border-white/[0.08] rounded-2xl px-4 py-3">
-                <div className="flex items-center gap-2 text-gray-400 text-sm">
-                  <Loader2 className="w-4 h-4 animate-spin" />
+              <div className="glass-card rounded-2xl px-5 py-4">
+                <div className="flex items-center gap-3 text-outline text-sm md:text-base">
+                  <Loader2 className="w-4 h-4 animate-spin text-primary" />
                   <span>Thinking...</span>
                 </div>
               </div>
@@ -267,32 +269,28 @@ export default function ChatInterface() {
         {/* Input area */}
         <form
           onSubmit={handleSubmit}
-          className="flex gap-3 pt-4 border-t border-white/[0.06]"
+          className="flex gap-4 p-2 glass-card accent-glow border-white/20 rounded-2xl mt-4"
         >
           <input
             suppressHydrationWarning
             ref={inputRef}
             value={input}
             onChange={handleInputChange}
-            placeholder="Describe what you want to build..."
+            placeholder="Type your project idea here..."
             maxLength={2000}
             disabled={isLoading}
-            className="flex-1 px-4 py-3 rounded-xl bg-white/[0.06] border border-white/[0.1] text-white 
-                       placeholder-gray-500 text-sm outline-none 
-                       focus:border-violet-500/50 focus:ring-2 focus:ring-violet-500/20 
-                       disabled:opacity-50 transition-all duration-200"
+            className="flex-1 px-4 py-3 bg-transparent text-on-background placeholder:text-outline text-sm md:text-base outline-none disabled:opacity-50"
           />
           <button
             suppressHydrationWarning
             type="submit"
             disabled={isLoading || !input.trim()}
-            className="px-4 py-3 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white 
-                       hover:from-violet-500 hover:to-indigo-500 
-                       disabled:opacity-40 disabled:cursor-not-allowed 
-                       transition-all duration-200 shadow-lg shadow-violet-500/20 
-                       hover:shadow-violet-500/30 active:scale-95"
+            className="flex items-center justify-center p-3 md:px-6 rounded-xl bg-primary-container text-white 
+                       hover:brightness-110 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed 
+                       transition-all duration-200 shadow-lg shadow-primary-container/20"
           >
-            <Send className="w-4 h-4" />
+            <Send className="w-5 h-5 md:mr-2" />
+            <span className="hidden md:inline font-bold">Generate</span>
           </button>
         </form>
       </div>
@@ -303,14 +301,14 @@ export default function ChatInterface() {
       {latestWorkflow && (
         <div className="w-full flex flex-col animate-slide-up px-6">
           {/* Tab bar */}
-          <div className="flex items-center gap-1 mb-4 bg-white/[0.04] p-1 rounded-xl border border-white/[0.08]">
+          <div className="flex items-center gap-1 mb-4 glass-card p-1 rounded-xl">
             <button
               suppressHydrationWarning
               onClick={() => setActiveTab("table")}
-              className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+              className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-bold transition-all duration-300 ${
                 activeTab === "table"
-                  ? "bg-violet-600 text-white shadow-md shadow-violet-500/25"
-                  : "text-gray-400 hover:text-gray-300 hover:bg-white/[0.05]"
+                  ? "bg-primary-container text-white shadow-lg shadow-primary-container/30"
+                  : "text-outline hover:text-white hover:bg-white/5"
               }`}
             >
               📊 Table View
@@ -318,10 +316,10 @@ export default function ChatInterface() {
             <button
               suppressHydrationWarning
               onClick={() => setActiveTab("diagram")}
-              className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+              className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-bold transition-all duration-300 ${
                 activeTab === "diagram"
-                  ? "bg-violet-600 text-white shadow-md shadow-violet-500/25"
-                  : "text-gray-400 hover:text-gray-300 hover:bg-white/[0.05]"
+                  ? "bg-primary-container text-white shadow-lg shadow-primary-container/30"
+                  : "text-outline hover:text-white hover:bg-white/5"
               }`}
             >
               🗺️ Flowchart
@@ -329,9 +327,9 @@ export default function ChatInterface() {
           </div>
 
           {/* Content area */}
-          <div className="flex-1 bg-white/[0.03] border border-white/[0.08] rounded-2xl overflow-hidden">
+          <div className="flex-1 glass-card border-white/10 rounded-3xl overflow-hidden min-h-[650px] shadow-2xl">
             {activeTab === "table" ? (
-              <div className="p-4 overflow-auto h-full">
+              <div className="p-6 overflow-auto h-full">
                 <WorkflowTable workflow={latestWorkflow} />
               </div>
             ) : (
