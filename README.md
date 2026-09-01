@@ -84,15 +84,6 @@ Open [http://localhost:3000](http://localhost:3000) and start describing your pr
 
 ---
 
-## Security Notes
-
-- **Never commit `.env.local`** — it's in `.gitignore`
-- API keys are **server-side only** — they never reach the browser
-- All API routes validate inputs (Content-Type, max length, non-empty)
-- HTTP security headers are set in `next.config.ts` (CSP, X-Frame-Options, etc.)
-
----
-
 ## Tech Stack
 
 | Layer       | Technology                          |
